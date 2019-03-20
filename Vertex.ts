@@ -1,9 +1,9 @@
-class Vector{
+class Vertex{
    posX : number;
    posY : number;
-   constructor(){
-    this.posX = 0;
-    this.posY = 0;
+   constructor(x:number,y:number){
+    this.posX = x;
+    this.posY = y;
    }
    public setX(n:number){
       this.posX = n;

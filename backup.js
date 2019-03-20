@@ -69,4 +69,5 @@ $("body").keyup(function(e){
      //ctx.clearRect(0,0,w,h);
   //   ctx.fillText(aCommond,10,50);
   }
+
 });
