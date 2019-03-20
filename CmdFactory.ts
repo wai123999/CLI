@@ -1,5 +1,6 @@
 /// <reference path="Canvas.ts" />
 /// <reference path="Vertex.ts" />
+/// <reference path="jquery.ts" />
 abstract class CmdFactory{
    //有了這個..這個版本的cli可以用不同的cmd組合
    abstract runCmd(cmdStr : string) : string;
@@ -83,6 +84,12 @@ abstract class AllOS {
        setTimeout(this.typeToScreen.bind(null,pos,ostr,k,currentLine),100);
      }
    }
+   public type(val:string,pos:Vertex) : void{
+     //this._ctx.fillStyle = this._bgColor;
+     //this._ctx.fillRect(pos.posX,pos.posY,pos.posY+300,11);
+     this._ctx.fillStyle = this._fontColor;
+     this._ctx.fillText(val,pos.posX,pos.posY);
+   }
  }
 
 class UnixOS extends AllOS{
@@ -95,16 +102,16 @@ class UnixOS extends AllOS{
         {
           this.typeAllToScreen(new Vertex(0,this._currentLine * this._gap),this.getLoginDescription()[k]);
         }
-
+      //  animation, 沒有互動
       //  this._ctx.fillText(">Login : ",0,this._currentLine*this._gap);
-        setTimeout(this.typeToScreen.bind(null,new Vertex(55,this._currentLine * this._gap),"keepervong",1,this._currentLine,">Login : "),2000);
-        this._currentLine++;
+      //  setTimeout(this.typeToScreen.bind(null,new Vertex(55,this._currentLine * this._gap),"keepervong",1,this._currentLine,">Login : "),2000);
+      //  this._currentLine++;
       //  this._ctx.fillText(">Password : ",0,this._currentLine*this._gap);
-        setTimeout(this.typeToScreen.bind(null,new Vertex(85,this._currentLine * this._gap),"*****",1,this._currentLine,">Password : "),4000);
-        this._currentLine++;
-        setTimeout(this.welcomeMessage.bind(this),5000);
-      //  this._ctx.fillText("login : ", this._currentLine * this._gap
+      //  setTimeout(this.typeToScreen.bind(null,new Vertex(85,this._currentLine * this._gap),"*****",1,this._currentLine,">Password : "),4000);
+      //  this._currentLine++;
+      //  setTimeout(this.welcomeMessage.bind(this),5000);
 
+      //  this._ctx.fillText("login : ", this._currentLine * this._gap
   }
   getLoginDescription(): string[] {
       let k : Array<string> = [];
@@ -120,5 +127,11 @@ class UnixOS extends AllOS{
   constructor(canvasID:string,userFilePath:string)
   {
     super(canvasID,userFilePath);
+  }
+  public inputlogin(){
+    this._ctx.fillText(">Login : ",0,this._currentLine*this._gap);
+  }
+  public inputpassword(){
+      this._ctx.fillText(">Password : ",0,this._currentLine*this._gap);
   }
 }
