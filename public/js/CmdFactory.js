@@ -37,60 +37,17 @@ var UnixFactory = /** @class */ (function (_super) {
 }(CmdFactory));
 var AllOS = /** @class */ (function () {
     function AllOS(canvasID, userFilePath) {
-        this._userFilePath = userFilePath;
-        this._canvas = new Canvas(canvasID);
-        this._ctx = this._canvas.getCtx();
-        this._ctx.font = "14px Arial";
-        this._currentLine = 1;
-        this._gap = 20;
-        this._cursorPosX = 0;
-        this.typeToScreen = this.typeToScreen.bind(this);
-        this._bgColor = "#000000";
-        this._fontColor = "#33cc33";
+        this.userFilePath = userFilePath;
+        this.canvas = new Canvas(canvasID);
+        this.ctx = this.canvas.getCtx();
+        this.ctx.font = "14px Arial";
+        this.currentLine = 1;
+        this.gap = 20;
+        this.charx = 0;
+        this.bgColor = "#000000";
+        this.fontColor = "#33cc33";
+        this.typeObj = new Type(this.ctx, "", this.bgColor, this.fontColor);
     }
-    AllOS.prototype.typeAllToScreen = function (pos, ostr) {
-        this._ctx.fillStyle = this._bgColor;
-        this._ctx.fillRect(0, 0, pos.posX, pos.posY);
-        this._ctx.fillStyle = this._fontColor;
-        this._ctx.fillText(ostr, pos.posX, pos.posY);
-        this._currentLine++;
-    };
-    ;
-    AllOS.prototype.typeToScreen = function (pos, ostr, k, currentLine, prefixStr) {
-        if (prefixStr === void 0) { prefixStr = ""; }
-        if (k == 1 && prefixStr != "") {
-            this._ctx.fillStyle = this._fontColor;
-            this._ctx.fillText(prefixStr, 0, pos.posY);
-        }
-        if (k <= ostr.length) {
-            if (k == -1) {
-                /*
-                setTimeout((function(k){
-                  this._ctx.fillStyle = this._bgColor;
-                  this._ctx.fillRect(pos.posX,pos.posY,pos.posY+300,11);
-                  this._ctx.fillStyle = this._fontColor;
-                  this._ctx.fillText(ostr.slice(0,k),pos.posX,pos.posY);
-                }).bind(this,k),10);
-                k = k +1;
-                */
-            }
-            else {
-                console.log(ostr);
-                this._ctx.fillStyle = this._bgColor;
-                this._ctx.fillRect(pos.posX, pos.posY, pos.posY + 300, 11);
-                this._ctx.fillStyle = this._fontColor;
-                this._ctx.fillText(ostr.slice(0, k), pos.posX, pos.posY);
-                k = k + 1;
-            }
-            setTimeout(this.typeToScreen.bind(null, pos, ostr, k, currentLine), 50);
-        }
-    };
-    AllOS.prototype.type = function (val, pos) {
-        //this._ctx.fillStyle = this._bgColor;
-        //this._ctx.fillRect(pos.posX,pos.posY,pos.posY+300,11);
-        this._ctx.fillStyle = this._fontColor;
-        this._ctx.fillText(val, pos.posX, pos.posY);
-    };
     return AllOS;
 }());
 var UnixOS = /** @class */ (function (_super) {
@@ -100,43 +57,167 @@ var UnixOS = /** @class */ (function (_super) {
     }
     UnixOS.prototype.setup = function () {
         //show Description
-        this._ctx.fillStyle = this._bgColor;
-        this._ctx.fillRect(0, 0, this._canvas._canvasWidth, this._canvas._canvasHeight);
+        this.ctx.fillStyle = this.bgColor;
+        this.ctx.fillRect(0, 0, this.canvas.canvasWidth, this.canvas.canvasHeight);
         for (var k = 0; k < this.getLoginDescription().length; k++) {
-            this.typeAllToScreen(new Vertex(0, this._currentLine * this._gap), this.getLoginDescription()[k]);
+            this.typeObj.typeAllToScreen(this.getLoginDescription()[k]);
         }
         //  animation, 沒有互動
-        //  this._ctx.fillText(">Login : ",0,this._currentLine*this._gap);
-        //  setTimeout(this.typeToScreen.bind(null,new Vertex(55,this._currentLine * this._gap),"keepervong",1,this._currentLine,">Login : "),2000);
-        //  this._currentLine++;
-        //  this._ctx.fillText(">Password : ",0,this._currentLine*this._gap);
-        //  setTimeout(this.typeToScreen.bind(null,new Vertex(85,this._currentLine * this._gap),"*****",1,this._currentLine,">Password : "),4000);
-        //  this._currentLine++;
+        //  this.ctx.fillText(">Login : ",0,this.currentLine*this.gap);
+        //  setTimeout(this.typeToScreen.bind(null,new Vertex(55,this.currentLine * this.gap),"keepervong",1,this.currentLine,">Login : "),2000);
+        //  this.currentLine++;
+        //  this.ctx.fillText(">Password : ",0,this.currentLine*this.gap);
+        //  setTimeout(this.typeToScreen.bind(null,new Vertex(85,this.currentLine * this.gap),"*****",1,this.currentLine,">Password : "),4000);
+        //  this.currentLine++;
         //  setTimeout(this.welcomeMessage.bind(this),5000);
-        //  this._ctx.fillText("login : ", this._currentLine * this._gap
+        //  this.ctx.fillText("login : ", this.currentLine * this.gap
     };
     UnixOS.prototype.getLoginDescription = function () {
         var k = [];
-        k = ["Welcome to Unix OS..... Date :" + new Date().toLocaleDateString(), "Enter to your account following . . ."]; //,"Please enter you account....."];
+        k = ["Welcome to Unix OS..... Date :" + new Date().toLocaleDateString(),
+            "Enter to your account in the following! . . ."]; //,"Please enter you account....."];
         return k;
     };
     UnixOS.prototype.scanLogin = function () {
         return true;
     };
     UnixOS.prototype.welcomeMessage = function () {
-        setTimeout(this.typeToScreen.bind(null, new Vertex(0, this._currentLine * this._gap), ">W e l c o m e b a c k..K e e p e r", 1, this._currentLine), 1000);
-        //this.typeAllToScreen(new Vertex(0,this._currentLine*this._gap),">Welcome back..Keeper~");
-        this._currentLine++;
+        setTimeout(this.typeObj.typeToScreen.bind(null, "", 1), 1000);
+        //this.typeAllToScreen(new Vertex(0,this.currentLine*this.gap),">Welcome back..Keeper~");
+        this.currentLine++;
     };
     UnixOS.prototype.inputlogin = function () {
-        this._ctx.fillText(">Login : ", 0, this._currentLine * this._gap);
-    };
-    UnixOS.prototype.inputpassword = function () {
-        this._ctx.fillText(">Password : ", 0, this._currentLine * this._gap);
-    };
-    UnixOS.prototype.clearTypeUp = function (pos) {
-        this._ctx.fillStyle = this._bgColor;
-        this._ctx.fillRect(pos.posX, pos.posY, 10, 11);
+        var s = new Signal();
+        s.addKeyPrunchListener(this.typeObj);
+        //this.ctx.fillText(">Login : ",0,this.currentLine*this.gap);
     };
     return UnixOS;
 }(AllOS));
+var Signal = /** @class */ (function () {
+    function Signal() {
+    }
+    Signal.prototype.addKeyPrunchListener = function (typeObj) {
+        typeObj.typeToScreenNoLineBreak("username : ");
+        var count = 1;
+        var name = "";
+        var buffer = "";
+        var tempBuf = "";
+        $("body").keypress(function (e) {
+            e.preventDefault();
+            var keyCode = e.keyCode || e.which || e.charCode;
+            var keyValue = String.fromCharCode(keyCode);
+            if (count == 1)
+                name += keyValue;
+            if (keyCode == 13) {
+                if (count != 2) {
+                    count++;
+                    typeObj.nextLine();
+                    typeObj.typeToScreenNoLineBreak("password : ");
+                }
+                else if (count == 2) {
+                    typeObj.nextLine();
+                    typeObj.typeToScreen("Welcome Back..." + name, 1);
+                    //typeObj.typeAllToScreen("Welcome Back..." + name);
+                    $("body").unbind("keypress");
+                    $("body").unbind("keyup");
+                    setTimeout(function () {
+                        typeObj.showFunction();
+                    }, 2000);
+                }
+            }
+            else {
+                typeObj.type(keyValue);
+            }
+        });
+        $("body").keyup(function (e) {
+            e.preventDefault();
+            var keyCode = e.keyCode || e.which || e.charCode;
+            if (keyCode == 8) {
+                //backspace
+                typeObj.deleteChar();
+                name = name.slice(0, name.length - 1);
+            }
+        });
+    };
+    return Signal;
+}());
+var Type = /** @class */ (function () {
+    function Type(ctx, cmdStr, bgColor, fontColor) {
+        this.cmdStr = "";
+        this.currentLine = 1;
+        this.heightOfLine = 14;
+        this.charWidth = 6;
+        this.cursorWidth = 1;
+        this.cursorHeight = this.heightOfLine;
+        this.ctx = ctx;
+        this.cmdStrFramePos = new Vertex(0, this.heightOfLine); //文字的框框position
+        this.charInFramePos = new Vertex(0, 0); //每個文字的position...type()會用到
+        this.cursorInFramePos = new Vertex(0, 0);
+        this.bgColor = bgColor;
+        this.fontColor = fontColor;
+        this.typeToScreen = this.typeToScreen.bind(this);
+    }
+    Type.prototype.type = function (val) {
+        this.cmdStr += val;
+        this.ctx.fillStyle = this.bgColor;
+        this.ctx.fillRect(this.cmdStrFramePos.x, this.cmdStrFramePos.y - 10, 1000, this.heightOfLine);
+        this.ctx.fillStyle = this.fontColor;
+        this.ctx.fillText(this.cmdStr, this.cmdStrFramePos.x, this.cmdStrFramePos.y);
+    };
+    Type.prototype.deleteChar = function () {
+        this.ctx.fillStyle = this.bgColor;
+        this.cmdStr = this.cmdStr.substr(0, this.cmdStr.length - 1);
+        this.ctx.fillStyle = this.bgColor;
+        this.ctx.fillRect(this.cmdStrFramePos.x, this.cmdStrFramePos.y - 10, 1000, this.heightOfLine);
+        this.ctx.fillStyle = this.fontColor;
+        this.ctx.fillText(this.cmdStr, this.cmdStrFramePos.x, this.cmdStrFramePos.y);
+    };
+    Type.prototype.typeToScreen = function (ostr, k) {
+        //animation
+        if (k <= ostr.length) {
+            this.ctx.fillStyle = this.bgColor;
+            this.ctx.fillRect(this.cmdStrFramePos.x, this.cmdStrFramePos.y - 10, this.cmdStrFramePos.x + 300, 11);
+            this.ctx.fillStyle = this.fontColor;
+            this.ctx.fillText(ostr.slice(0, k), this.cmdStrFramePos.x, this.cmdStrFramePos.y);
+            k = k + 1;
+            setTimeout(this.typeToScreen.bind(null, ostr, k), 50);
+        }
+        else {
+            this.nextLine();
+        }
+    };
+    Type.prototype.typeAllToScreen = function (ostr) {
+        this.ctx.fillStyle = this.fontColor;
+        this.ctx.fillText(ostr, this.cmdStrFramePos.x, this.cmdStrFramePos.y);
+        this.nextLine();
+    };
+    ;
+    Type.prototype.showCursor = function () {
+        this.ctx.fillStyle = this.fontColor;
+        this.ctx.fillRect(this.cursorInFramePos.x, this.cursorInFramePos.y, this.cursorWidth, this.cursorHeight);
+    };
+    Type.prototype.clearCursor = function () {
+        this.ctx.fillStyle = this.bgColor;
+        this.ctx.fillRect(this.cursorInFramePos.x, this.cursorInFramePos.y, this.cursorWidth, this.cursorHeight);
+    };
+    Type.prototype.typeToScreenNoLineBreak = function (str) {
+        this.cmdStr = "";
+        this.ctx.fillStyle = this.fontColor;
+        this.ctx.fillText(str, this.cmdStrFramePos.x, this.cmdStrFramePos.y);
+        this.cmdStrFramePos.x = this.cmdStrFramePos.x + str.length * 7;
+        ;
+    };
+    Type.prototype.nextLine = function () {
+        this.cmdStr = "";
+        this.currentLine++;
+        this.cmdStrFramePos.x = 0;
+        this.cmdStrFramePos.y += this.heightOfLine;
+    };
+    Type.prototype.showFunction = function () {
+        var k = ["Command:", "(1)help", "(2)kill -l sig.no", "(3)gcc yourcode.c -o yourcode.out"];
+        for (var j = 0; j < k.length; j++) {
+            this.typeAllToScreen(k[j]);
+        }
+    };
+    return Type;
+}());

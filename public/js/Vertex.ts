@@ -1,14 +1,14 @@
 class Vertex{
-   posX : number;
-   posY : number;
+   x : number;
+   y : number;
    constructor(x:number,y:number){
-    this.posX = x;
-    this.posY = y;
+    this.x = x;
+    this.y = y;
    }
    public setX(n:number){
-      this.posX = n;
+      this.x = n;
    }
    public setY(n:number){
-     this.posY = n;
+     this.y = n;
    }
 }
