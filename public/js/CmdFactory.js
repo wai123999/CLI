@@ -24,11 +24,25 @@ var UnixFactory = /** @class */ (function (_super) {
     function UnixFactory() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    UnixFactory.prototype.runCmd = function (cmdStr) {
+    UnixFactory.prototype.runCmd = function (cmdStr, typeObj) {
         var rStr;
         switch (cmdStr) {
             case "mkdir":
                 rStr = "Make a directory";
+                typeObj.type(rStr);
+                typeObj.nextLine();
+                break;
+            case "chat":
+                console.log("casecase");
+                rStr = "Chat connect . . ";
+                $("#chatCanvas").addClass("chatCanvasAnim");
+                typeObj.type(rStr);
+                typeObj.nextLine();
+                break;
+            default:
+                rStr = "command fail!";
+                typeObj.type(rStr);
+                typeObj.nextLine();
                 break;
         }
         return rStr;
@@ -96,12 +110,32 @@ var UnixOS = /** @class */ (function (_super) {
 var Signal = /** @class */ (function () {
     function Signal() {
     }
+    Signal.prototype.addCLIListener = function (typeObj) {
+        var a = new UnixFactory();
+        var cmdStr = "";
+        $("body").keypress(function (e) {
+            e.preventDefault();
+            var keyCode = e.keyCode || e.which || e.charCode;
+            var keyValue = String.fromCharCode(keyCode);
+            if (keyCode == 13) {
+                console.log("open", cmdStr);
+                typeObj.nextLine();
+                a.runCmd(cmdStr, typeObj);
+                cmdStr = "";
+            }
+            else {
+                typeObj.type(keyValue);
+                cmdStr += keyValue;
+            }
+        });
+    };
     Signal.prototype.addKeyPrunchListener = function (typeObj) {
         typeObj.typeToScreenNoLineBreak("username : ");
         var count = 1;
         var name = "";
         var buffer = "";
         var tempBuf = "";
+        var _this = this;
         $("body").keypress(function (e) {
             e.preventDefault();
             var keyCode = e.keyCode || e.which || e.charCode;
@@ -122,6 +156,7 @@ var Signal = /** @class */ (function () {
                     $("body").unbind("keyup");
                     setTimeout(function () {
                         typeObj.showFunction();
+                        _this.addCLIListener(typeObj);
                     }, 2000);
                 }
             }

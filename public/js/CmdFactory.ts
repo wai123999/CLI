@@ -3,18 +3,33 @@
 /// <reference path="jquery.ts" />
 abstract class CmdFactory{
    //有了這個..這個版本的cli可以用不同的cmd組合
-   abstract runCmd(cmdStr : string) : string;
+   abstract runCmd(cmdStr : string,typeObj : Type) : string;
 }
 
 class UnixFactory extends CmdFactory{
-    runCmd(cmdStr : string) : string {
+    runCmd(cmdStr : string,typeObj : Type) : string {
         let rStr;
         switch ( cmdStr )
         {
            case  "mkdir":
                  rStr = "Make a directory";
+                 typeObj.type(rStr);
+                 typeObj.nextLine();
                  break;
+           case  "chat":
+                  console.log("casecase");
+                  rStr = "Chat connect . . ";
+                  $("#chatCanvas").addClass("chatCanvasAnim");
+                    typeObj.type(rStr);
+                   typeObj.nextLine();
+                  break;
+           default:
+                  rStr = "command fail!";
+                  typeObj.type(rStr);
+                   typeObj.nextLine();
+                  break;
         }
+
         return rStr;
     }
 }
@@ -96,15 +111,39 @@ class UnixOS extends AllOS{
     s.addKeyPrunchListener(this.typeObj);
     //this.ctx.fillText(">Login : ",0,this.currentLine*this.gap);
   }
+
 }
 class Signal{
    constructor(){}
+   public addCLIListener(typeObj : Type)
+   {
+     var a = new UnixFactory();
+     var cmdStr = "";
+     $("body").keypress(function(e)
+     {
+          e.preventDefault();
+          var keyCode = e.keyCode || e.which || e.charCode;
+          var keyValue = String.fromCharCode(keyCode);
+          if (keyCode == 13)
+          {
+             console.log("open" , cmdStr);
+              typeObj.nextLine();
+              a.runCmd(cmdStr,typeObj);
+              cmdStr = "";
+          }
+          else{
+               typeObj.type(keyValue);
+               cmdStr += keyValue;
+          }
+     });
+   }
    public addKeyPrunchListener(typeObj:Type){
      typeObj.typeToScreenNoLineBreak("username : ");
      var count = 1
      var name = "";
      var buffer = "";
      var tempBuf = "";
+    var _this = this;
      $("body").keypress(function(e)
      {
           e.preventDefault();
@@ -127,6 +166,7 @@ class Signal{
                 $("body").unbind("keypress");$("body").unbind("keyup");
                 setTimeout(function(){
                     typeObj.showFunction();
+                    _this.addCLIListener(typeObj);
                 },2000);
             }
           }
